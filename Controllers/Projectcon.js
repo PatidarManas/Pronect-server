@@ -90,22 +90,22 @@ function similarity(s1, s2) {
 
 
 export const checkplagariasm = async(req,res)=>{
-    
     try{
         const projects = await Project.find({});
-        const highestdisc=0;
-        const highesttitle=0;
+        var highestdisc=0;
+        var highesttitle=0;
         projects.forEach((element)=>{
-            if(highesttitle > similarity(req.body.title,element.title) ){
+            if(highesttitle < similarity(req.body.title,element.title) ){
+                console.log(similarity(req.body.title,element.title))
                 highesttitle = similarity(req.body.title,element.title);
             }
         })
         projects.forEach((element)=>{
-            if(highestdisc > similarity(req.body.discription,element.discription) ){
+            if(highestdisc < similarity(req.body.discription,element.discription) ){
                 highestdisc = similarity(req.body.discription,element.discription);
             }
         })
-        res.status(200).json({highesttitle ,highestdisc});
+        res.status(200).json({highesttitle:highesttitle*100 ,highestdisc:highestdisc*100});
     }catch(error){
         res.status(400).json(error);
 
