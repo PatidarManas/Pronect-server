@@ -1,5 +1,5 @@
 import express from "express";
-import { Searchproject, comment, dislike, findcomment, like, newproject,viewproject } from "../Controllers/Projectcon.js";
+import { Searchproject, checkplagariasm, comment, dislike, findcomment, like, newproject,viewproject } from "../Controllers/Projectcon.js";
 import { isAuth } from "../Controllers/Authcon.js";
 
 const router = express.Router();
@@ -11,4 +11,5 @@ router.post("/like",isAuth,like);
 router.post("/dislike",isAuth,dislike);
 router.post("/newcomment",isAuth,comment);
 router.post("/comment",findcomment);
+router.post("/check",checkplagariasm);
 export default router;

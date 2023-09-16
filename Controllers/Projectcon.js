@@ -27,7 +27,6 @@ export const newproject = async (req, res) => {
             rp: req.body.user.rp + 10,
             $push: { notifications: notification._id }
         })
-        console.log("here")
         await User.updateOne({_id:req.body.user._id}, {
            
             $push: { projects: entry }
@@ -40,13 +39,74 @@ export const newproject = async (req, res) => {
     }
 }
 export const viewproject = async (req, res) => {
-    console.log(req.body.id);
     try {
         const project = await Project.findById(req.body.id);
         res.status(200).json(project)
     } catch (error) {
-        console.log(error)
         res.status(400).json(error)
+
+    }
+}
+function similarity(s1, s2) {
+    var longer = s1;
+    var shorter = s2;
+    if (s1.length < s2.length) {
+      longer = s2;
+      shorter = s1;
+    }
+    var longerLength = longer.length;
+    if (longerLength == 0) {
+      return 1.0;
+    }
+    return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+  }
+  
+  function editDistance(s1, s2) {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+  
+    var costs = new Array();
+    for (var i = 0; i <= s1.length; i++) {
+      var lastValue = i;
+      for (var j = 0; j <= s2.length; j++) {
+        if (i == 0)
+          costs[j] = j;
+        else {
+          if (j > 0) {
+            var newValue = costs[j - 1];
+            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+              newValue = Math.min(Math.min(newValue, lastValue),
+                costs[j]) + 1;
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
+        }
+      }
+      if (i > 0)
+        costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
+  }
+
+
+export const checkplagariasm = async(req,res)=>{
+    try{
+        const projects = await User.find({});
+        const highestdisc=0;
+        const highesttitle=0;
+        projects.forEach((element)=>{
+            if(highesttitle > similarity(req.body.title,element.title) ){
+                highesttitle = similarity(req.body.title,element.title);
+            }
+        })
+        projects.forEach((element)=>{
+            if(highestdisc > similarity(req.body.discription,element.discription) ){
+                highestdisc = similarity(req.body.discription,element.discription);
+            }
+        })
+        res.status(200).json({highesttitle ,highestdisc});
+    }catch(error){
+        res.status(400).json(error);
 
     }
 }
@@ -55,7 +115,7 @@ export const Searchproject = async (req, res) => {
     try {
         const regexPattern = new RegExp(req.body.query, "i");
         const project = await Project.find({  $and: [{ $or: [{ title: { $regex: regexPattern } }, { discription: { $regex: regexPattern } }], visiblity:true}]})
-        console.log(project)
+
         if (project) {
 
             res.status(200).json(project)
@@ -79,7 +139,7 @@ export const like = async (req, res) => {
             $pull: { dislikes: req.body.user.username }
         })
         const user = await User.findOne({username:updated.username});
-        console.log(user)
+
         const notification = await Notification.create({
             content: "+1 Ranking Point as Someone has just Liked your project! " + updated.title ,
             islink: false,
@@ -91,7 +151,8 @@ export const like = async (req, res) => {
         })
         res.status(200).json({ likes: updated.likes.length, dislikes: updated.dislikes.length });
     } catch (error) {
-        console.log(error)
+
+
         res.status(400).json(error)
     }
 }

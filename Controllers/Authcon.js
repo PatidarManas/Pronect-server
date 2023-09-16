@@ -3,11 +3,9 @@ import { User } from "../Models/User.js"
 import jwt from "jsonwebtoken"
 
 export const isAuth = async (req, res, next) => {
-    console.log("hjghj")
     try {
         const { token } = req.body;
         if (token) {
-            console.log("ere")
             const decoded = await jwt.verify(token.substring(6), 'process.env.JWT_SECRET');
             const newuser = await User.findById(decoded._id);
             req.body.user=newuser
@@ -26,11 +24,7 @@ export const isAuth = async (req, res, next) => {
 
 export const isLogin = async (req, res) => {
     try {
-        console.log("idhar")
         const { token } = req.body;
-        // const authHeader = req.headers['authorization']
-        // const token = authHeader && authHeader.split(' ')[1]
-        console.log(token)
 
         if (token) {
             const decoded = jwt.verify(token.substring(6), 'process.env.JWT_SECRET');
@@ -49,7 +43,8 @@ export const isLogin = async (req, res) => {
                     rp: newrp,
                     $push:{notifications:notification._id}
                 })
-                // console.log(newuser);
+
+
                 
                 res.status(200).json({
                     success: true,
@@ -72,7 +67,6 @@ export const isLogin = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error)
         res.status(400).json(error)
     }
 }
@@ -103,7 +97,6 @@ export const isvalidusername = async (req, res) => {
     }
 }
 export const register = async (req, res) => {
-    // console.log(req.body.email)
     try {
         const newuser = await User.create({
             email: req.body.newemail,
@@ -113,33 +106,21 @@ export const register = async (req, res) => {
             domain: req.body.domain,
             clg: req.body.clg,
         })
-        // const token = cookieParser(newuser, "secretkey", { expiresIn: "2d" })
-        // const token = jwt.sign({ _id: newuser._id }, 'process.env.JWT_SECRET',
-        //     {
-        //         expiresIn: "15d",
-        //     });
-        // res.cookie("token", token, {
-        //     httpOnly: false,
-        // });
+      
 
         res.status(200).json(newuser)
     } catch (error) {
-        console.log(error)
         res.status(400).json(error)
     }
 }
 
 export const login = async (req, res) => {
-    console.log(req.body.username)
     try {
         const user = await User.findOne({ username: req.body.username })
-        // console.log(user)
         if (user && user.password === req.body.password) {
             const token = jwt.sign({ _id: user._id }, 'process.env.JWT_SECRET', {
                 expiresIn: "15d",
             })
-            // console.log(token)
-            // res.cookie("token",token)
             res.status(200).json(token)
 
         } else {
@@ -152,21 +133,9 @@ export const login = async (req, res) => {
     }
 }
 export const searchuser = async(req,res)=>{
-    console.log("ma")
     try {
         const user = await User.findOne({username:req.body.username});
         if(user){
-            // if(user.username != req.body.user.username){
-            //     const notification = await Notification.create({
-            //         content:"Someone Visited Your Profile and you receives +5 Ranking Points",
-            //         islink:false,
-            //         username:user.username
-            //     })
-            //     user = await User.findByIdAndUpdate(user._id,{
-            //         rp:user.rp + 5,
-            //         $push:{notifications:notification._id}
-            //     })
-            // }
             res.status(200).json(user)
         }else{
 
@@ -185,8 +154,6 @@ export const update = async (req, res) => {
             mobile: req.body.mobile,
             password: req.body.password,
         })
-
-        //delete token
         res.status(200).json("Updated");
     } catch (error) {
         res.status(400).json(error);
@@ -212,9 +179,9 @@ export const userdetail = async (req, res) => {
 export const Searchuser = async(req,res)=>{
     try {
        const regexPattern = new RegExp(req.body.query, "i");
-       // console.log(regexPattern)
+
        const users = await User.find({$or: [{name:{ $regex: regexPattern}}, {username:{$regex: regexPattern}},{email:{$regex: regexPattern}}]})
-    //    console.log(project)
+
        if(users){
            
            res.status(200).json(users)
