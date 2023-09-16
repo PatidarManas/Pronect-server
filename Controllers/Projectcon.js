@@ -90,8 +90,9 @@ function similarity(s1, s2) {
 
 
 export const checkplagariasm = async(req,res)=>{
+    
     try{
-        const projects = await User.find({});
+        const projects = await Project.find({});
         const highestdisc=0;
         const highesttitle=0;
         projects.forEach((element)=>{
