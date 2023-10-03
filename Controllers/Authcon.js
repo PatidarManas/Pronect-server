@@ -1,10 +1,15 @@
 import { Notification } from "../Models/Notification.js";
 import { User } from "../Models/User.js"
 import jwt from "jsonwebtoken"
+import { Complaint } from "../Models/complaints.js";
 
 export const isAuth = async (req, res, next) => {
     try {
-        const { token } = req.body;
+        
+        const admintoken1 = req.body.token.split('; ')[0]
+        const admintoken2 = req.body.token.split('; ')[1]
+        const token = admintoken1.startsWith('token') ? admintoken1 : admintoken2 
+        console.log(token)
         if (token) {
             const decoded = await jwt.verify(token.substring(6), 'process.env.JWT_SECRET');
             const newuser = await User.findById(decoded._id);
@@ -17,6 +22,7 @@ export const isAuth = async (req, res, next) => {
             });
         }
     } catch (error) {
+        console.log(error)
         res.status(400).json(error)
     }
 }
@@ -24,7 +30,9 @@ export const isAuth = async (req, res, next) => {
 
 export const isLogin = async (req, res) => {
     try {
-        const { token } = req.body;
+        const admintoken1 = req.body.token.split('; ')[0]
+        const admintoken2 = req.body.token.split('; ')[1]
+        const token = admintoken1.startsWith('token') ? admintoken1 : admintoken2 
 
         if (token) {
             const decoded = jwt.verify(token.substring(6), 'process.env.JWT_SECRET');
@@ -67,6 +75,7 @@ export const isLogin = async (req, res) => {
             });
         }
     } catch (error) {
+        console.log(error)
         res.status(400).json(error)
     }
 }
@@ -134,6 +143,7 @@ export const login = async (req, res) => {
 }
 export const searchuser = async(req,res)=>{
     try {
+        console.log(req.body.username)
         const user = await User.findOne({username:req.body.username});
         if(user){
             res.status(200).json(user)
@@ -213,6 +223,21 @@ export const notification = async(req,res)=>{
         res.status(200).json(notification);
     } catch (error) {
         res.status(400).json(error);
+        
+    }
+}
+
+export const complaintregister = async(req,res)=>{
+    try {
+        await Complaint.create({
+            topic:req.body.arr,
+            username:req.body.user.username,
+            issue:req.body.inputstr
+
+        })
+        res.status(200).json("created")
+    } catch (error) {
+        res.status(400).json(error)
         
     }
 }

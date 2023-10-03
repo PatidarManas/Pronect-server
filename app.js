@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authrouter from "./Routes/Auth.js";
 import projectrouter from "./Routes/Projectroute.js";
+import adminrouter from "./Routes/Admin.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ export default app;
 
 app.use("/auth",authrouter)
 app.use("/project",projectrouter)
+app.use("/admin",adminrouter)
 
 app.get("/", (req, res) =>
   res.send(

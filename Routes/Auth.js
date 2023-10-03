@@ -1,5 +1,5 @@
 import express from "express";
-import { Searchuser, isAuth, isLogin, isvalidemail, isvalidusername, login, markread, notification, register, searchuser } from "../Controllers/Authcon.js";
+import { Searchuser, complaintregister, isAuth, isLogin, isvalidemail, isvalidusername, login, markread, notification, register, searchuser } from "../Controllers/Authcon.js";
 
 const router = express.Router();
  
@@ -12,6 +12,7 @@ router.post("/searchuser",isAuth,searchuser);
 router.post("/search",Searchuser);
 router.post("/markread",isAuth,markread);
 router.post("/notification",isAuth,notification);
+router.post("/issue",isAuth,complaintregister);
 
 
 export default router;
