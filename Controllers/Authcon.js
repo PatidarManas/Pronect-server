@@ -1,7 +1,7 @@
 import { Notification } from "../Models/Notification.js";
 import { User } from "../Models/User.js"
 import jwt from "jsonwebtoken"
-import { Complaint } from "../Models/complaints.js";
+import { Complaint } from "../Models/Complaints.js";
 
 export const isAuth = async (req, res, next) => {
     try {
